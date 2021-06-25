@@ -15,6 +15,13 @@ const getHashedPassword = async (password) => {
   return hashedPassword;
 };
 
+// Password Checking
+const checkPassword = async (hashedPassword, password) => {
+  return await bcrypt.compare(password, hashedPassword);
+};
+
+// Register Route Start
+
 router.post("/register", async (req, res) => {
   try {
     const existingUser = await User.findOne({ email: req.body.email });
@@ -37,5 +44,28 @@ router.post("/register", async (req, res) => {
     res.status(500).json({ message: "Registration failed!", status: 500 });
   }
 });
+
+// Register Route End
+
+// Login Route Start
+
+router.post("/login", async (req, res) => {
+  const existingUser = await User.findOne({ email: req.body.email });
+  if (existingUser) {
+    const matchedPassword = await checkPassword(
+      existingUser.password,
+      req.body.password
+    );
+    if (matchedPassword)
+      return res.status(200).json({ message: "Password Matched", status: 200 });
+    else {
+      res.status(400).json({ message: "Password did not match.", status: 400 });
+    }
+  } else {
+    res.status(400).json({ message: "User doesn't exist", status: 400 });
+  }
+});
+
+// Login Route End
 
 module.exports = router;
