@@ -2,6 +2,9 @@ const express = require("express");
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const router = express.Router();
+const dotenv = require("dotenv");
+const jwt = require("jsonwebtoken");
+dotenv.config();
 
 router.get("/", (req, res) => {
   res.json({ message: "App is running" });
@@ -18,6 +21,14 @@ const getHashedPassword = async (password) => {
 // Password Checking
 const checkPassword = async (hashedPassword, password) => {
   return await bcrypt.compare(password, hashedPassword);
+};
+
+// Generate Token
+
+const getToken = (user) => {
+  delete user.password;
+  const token = jwt.sign(user, process.env.JWT_PRIVATE_KEY);
+  return `Bearer ${token}`;
 };
 
 // Register Route Start
@@ -56,9 +67,10 @@ router.post("/login", async (req, res) => {
       existingUser.password,
       req.body.password
     );
-    if (matchedPassword)
-      return res.status(200).json({ message: "Password Matched", status: 200 });
-    else {
+    if (matchedPassword) {
+      const token = getToken({ ...existingUser });
+      return res.status(200).json({ token: token, status: 200 });
+    } else {
       res.status(400).json({ message: "Password did not match.", status: 400 });
     }
   } else {
