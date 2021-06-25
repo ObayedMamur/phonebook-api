@@ -1,16 +1,27 @@
 const express = require("express");
 const User = require("../models/user");
+const bcrypt = require("bcrypt");
 const router = express.Router();
 
 router.get("/", (req, res) => {
   res.json({ message: "App is running" });
 });
 
+// Password Hasing with bcrypt
+const getHashedPassword = async (password) => {
+  const saltRounds = 10;
+  const salt = await bcrypt.genSalt(saltRounds);
+  const hashedPassword = await bcrypt.hash(password, salt);
+  return hashedPassword;
+};
+
 router.post("/register", async (req, res) => {
   try {
-    const existingUser = User.findOne({ email: req.body.email });
+    const existingUser = await User.findOne({ email: req.body.email });
+    console.log(existingUser);
     if (!existingUser) {
       const newUser = new User(req.body);
+      newUser.password = await getHashedPassword(req.body.password);
       await newUser.save();
       console.log("Registration Successful!");
       res.json({ message: "Registration Successful!", status: 201 });
