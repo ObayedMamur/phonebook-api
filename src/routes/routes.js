@@ -107,10 +107,10 @@ router.post("/contacts", authenticateJWT, async (req, res) => {
     const addContact = new Contact(req.body);
     await addContact.save();
 
-    res.status(200).json({
+    res.status(201).json({
       message: "Contact added successfully!",
-      savedContact: req.body,
-      status: 200,
+      savedContact: req.addContact,
+      status: 201,
     });
   } catch (error) {
     res.status(500).json({ message: "Something went wrong!", status: 500 });
