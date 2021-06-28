@@ -4,6 +4,8 @@ const bcrypt = require("bcrypt");
 const router = express.Router();
 const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
+const authenticateJWT = require("../middlewares/authenticateJWT");
+const createContactModel = require("../models/contact");
 dotenv.config();
 
 router.get("/", (req, res) => {
@@ -84,5 +86,37 @@ router.post("/login", async (req, res) => {
 });
 
 // Login Route End
+
+// Contact Route Start
+
+router.post("/contacts", authenticateJWT, async (req, res) => {
+  console.log("=================================");
+  console.log("Logged In User: ");
+  console.log(req.user);
+
+  console.log("=================================");
+
+  console.log("New Contact to add: ");
+  console.log(req.body);
+
+  console.log("=================================");
+
+  try {
+    const Contact = createContactModel(req.user.id);
+
+    const addContact = new Contact(req.body);
+    await addContact.save();
+
+    res.status(200).json({
+      message: "Contact added successfully!",
+      savedContact: req.body,
+      status: 200,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong!", status: 500 });
+  }
+});
+
+// Contact Route End
 
 module.exports = router;
