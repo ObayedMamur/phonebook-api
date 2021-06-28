@@ -68,7 +68,12 @@ router.post("/login", async (req, res) => {
       req.body.password
     );
     if (matchedPassword) {
-      const token = getToken({ ...existingUser });
+      const token = getToken({
+        id: existingUser._id,
+        firstName: existingUser.firstName,
+        lastName: existingUser.lastName,
+        email: existingUser.email,
+      });
       return res.status(200).json({ token: token, status: 200 });
     } else {
       res.status(400).json({ message: "Password did not match.", status: 400 });
