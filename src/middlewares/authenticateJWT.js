@@ -21,6 +21,8 @@ const authenticateJWT = (req, res, next) => {
   if (token) {
     const decodedToken = validateToken(token);
     if (decodedToken) {
+      // console.log("Token User: ", decodedToken);
+      req.user = decodedToken;
       next();
     } else {
       res
