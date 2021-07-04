@@ -6,6 +6,7 @@ const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 const authenticateJWT = require("../middlewares/authenticateJWT");
 const createContactModel = require("../models/contact");
+const { findOne } = require("../models/user");
 dotenv.config();
 
 router.get("/", (req, res) => {
@@ -152,5 +153,20 @@ router.get("/contacts", authenticateJWT, async (req, res) => {
 });
 
 // Get all Contacts Route End
+
+// Delete Existing Contact Start
+
+router.delete("/contacts/:id", authenticateJWT, async (req, res) => {
+  const Contact = createContactModel(req.user.id);
+  await Contact.findByIdAndDelete(req.params.id);
+  console.log("Deleted contact id: ", req.params.id);
+  res.status(200).json({
+    message: "Contact Deleted Successfully!",
+    status: 200,
+    deletedContactId: req.params.id,
+  });
+});
+
+// Delete Existing Contact End
 
 module.exports = router;
