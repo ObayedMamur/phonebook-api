@@ -120,7 +120,17 @@ router.post("/contacts", authenticateJWT, async (req, res) => {
 // Contact Route End
 
 // Contact Update Route Start
-router.put("/contacts", authenticateJWT, async (req, res) => {});
+router.put("/contacts", authenticateJWT, async (req, res) => {
+  if (req.body.id) {
+  } else {
+    res
+      .status(400)
+      .json({
+        message: "Couldn't update contact as no id found.",
+        status: 400,
+      });
+  }
+});
 // Contact Update Route End
 
 module.exports = router;
