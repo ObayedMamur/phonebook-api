@@ -143,4 +143,14 @@ router.put("/contacts/:id", authenticateJWT, async (req, res) => {
 });
 // Contact Update Route End
 
+// Get all Contacts Route Start
+
+router.get("/contacts", authenticateJWT, async (req, res) => {
+  const Contact = createContactModel(req.user.id);
+  const allContacts = await Contact.find({});
+  res.status(200).json({ status: 200, contacts: allContacts });
+});
+
+// Get all Contacts Route End
+
 module.exports = router;
