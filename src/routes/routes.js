@@ -120,15 +120,25 @@ router.post("/contacts", authenticateJWT, async (req, res) => {
 // Contact Route End
 
 // Contact Update Route Start
-router.put("/contacts", authenticateJWT, async (req, res) => {
-  if (req.body.id) {
-  } else {
-    res
-      .status(400)
-      .json({
-        message: "Couldn't update contact as no id found.",
-        status: 400,
-      });
+router.put("/contacts/:id", authenticateJWT, async (req, res) => {
+  const Contact = createContactModel(req.user.id);
+  try {
+    const contactToUpdate = await Contact.findById(req.params.id);
+    if (contactToUpdate) {
+      for (let key in req.body) {
+        contactToUpdate[key] = req.body[key];
+      }
+      await contactToUpdate.save();
+      res
+        .status(200)
+        .json({ message: "Contact Updated Successfully!", status: 200 });
+    } else {
+      res
+        .status(400)
+        .json({ message: "Error on update, contact not found", status: 400 });
+    }
+  } catch (err) {
+    console.log("Error while updating contact!", err);
   }
 });
 // Contact Update Route End
