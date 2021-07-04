@@ -119,4 +119,8 @@ router.post("/contacts", authenticateJWT, async (req, res) => {
 
 // Contact Route End
 
+// Contact Update Route Start
+router.put("/contacts", authenticateJWT, async (req, res) => {});
+// Contact Update Route End
+
 module.exports = router;
